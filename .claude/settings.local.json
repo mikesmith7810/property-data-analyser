@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3 -c \" import sys, json raw = sys.stdin.read\\(\\).strip\\(\\).rstrip\\('';''\\) obj = json.loads\\(raw\\) nodes = json.loads\\(obj[''data'']\\) print\\(''Total nodes:'', len\\(nodes\\)\\) print\\(''Node 0 \\(root\\):'', json.dumps\\(nodes[0], indent=2\\)\\) print\\(''Node 1 \\(propertyData\\):'', json.dumps\\(nodes[1], indent=2\\)\\) \")",
+      "Bash(python3:*)",
+      "Bash(./gradlew compileJava:*)",
+      "Bash(xargs:*)"
+    ]
+  }
+}
