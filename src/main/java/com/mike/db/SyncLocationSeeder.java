@@ -20,21 +20,24 @@ public class SyncLocationSeeder {
 
     @Transactional
     void seed() {
-        Long count = em.createQuery("SELECT COUNT(s) FROM SyncLocation s", Long.class)
-                .getSingleResult();
-        if (count > 0) return;
-
         List.of(
-                new String[]{"Bridport",    "214",  "REGION"},
-                new String[]{"Weymouth",    "1440", "REGION"},
-                new String[]{"Dorchester",  "431",  "REGION"},
-                new String[]{"Portland",    "1086", "REGION"}
+                new String[]{"Bridport",   "214",  "REGION"},
+                new String[]{"Weymouth",   "1440", "REGION"},
+                new String[]{"Dorchester", "431",  "REGION"},
+                new String[]{"Portland",   "1086", "REGION"},
+                new String[]{"Swanage",    "1302", "REGION"}
         ).forEach(row -> {
-            SyncLocation loc = new SyncLocation();
-            loc.name       = row[0];
-            loc.locationId = row[1];
-            loc.locationType = row[2];
-            em.persist(loc);
+            long exists = em.createQuery(
+                            "SELECT COUNT(s) FROM SyncLocation s WHERE s.locationId = :lid", Long.class)
+                    .setParameter("lid", row[1])
+                    .getSingleResult();
+            if (exists == 0) {
+                SyncLocation loc = new SyncLocation();
+                loc.name         = row[0];
+                loc.locationId   = row[1];
+                loc.locationType = row[2];
+                em.persist(loc);
+            }
         });
     }
 }
