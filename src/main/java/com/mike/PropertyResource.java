@@ -77,11 +77,20 @@ public class PropertyResource {
     }
 
     @GET
+    @Path("/towns")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Blocking
+    public List<String> getTowns() {
+        return propertyListingService.findTowns();
+    }
+
+    @GET
     @Path("/listings")
     @Produces(MediaType.APPLICATION_JSON)
     @Blocking
     public PropertyListingPage getListings(
             @QueryParam("agentName") String agentName,
+            @QueryParam("town") String town,
             @QueryParam("reduced") @DefaultValue("false") boolean reducedOnly,
             @QueryParam("newHome") @DefaultValue("false") boolean newHomeOnly,
             @QueryParam("sortBy") @DefaultValue("daysOnMarket") String sortBy,
@@ -89,7 +98,7 @@ public class PropertyResource {
             @QueryParam("size") @DefaultValue("20") int size
     ) {
         return propertyListingService.queryListings(
-                new PropertyListingQuery(agentName, reducedOnly, newHomeOnly, sortBy, page, size));
+                new PropertyListingQuery(agentName, town, reducedOnly, newHomeOnly, sortBy, page, size));
     }
 
     @GET

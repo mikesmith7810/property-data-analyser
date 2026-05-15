@@ -1,8 +1,9 @@
 const BASE = 'http://localhost:8080';
 
-export async function fetchListings({ agentName, reduced, newHome, sortBy, page = 0, size = 20 } = {}) {
+export async function fetchListings({ agentName, town, reduced, newHome, sortBy, page = 0, size = 20 } = {}) {
   const params = new URLSearchParams();
   if (agentName) params.set('agentName', agentName);
+  if (town)      params.set('town', town);
   if (reduced)   params.set('reduced', 'true');
   if (newHome)   params.set('newHome', 'true');
   if (sortBy)    params.set('sortBy', sortBy);
@@ -22,5 +23,11 @@ export async function fetchListing(id) {
 export async function fetchAgents() {
   const res = await fetch(`${BASE}/property/agents`);
   if (!res.ok) throw new Error(`Failed to fetch agents: ${res.status}`);
+  return res.json();
+}
+
+export async function fetchTowns() {
+  const res = await fetch(`${BASE}/property/towns`);
+  if (!res.ok) throw new Error(`Failed to fetch towns: ${res.status}`);
   return res.json();
 }

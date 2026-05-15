@@ -1,26 +1,28 @@
 import { useEffect, useRef, useState } from 'react';
-import { fetchAgents } from '../../api/listings';
+import { fetchAgents, fetchTowns } from '../../api/listings';
 import './FilterBar.css';
 
 export default function FilterBar({ filters, onChange }) {
   const [agents, setAgents] = useState([]);
-  const debounceRef = useRef(null);
-  const inputRef = useRef(null);
+  const [towns, setTowns] = useState([]);
+  const agentDebounce = useRef(null);
+  const agentRef = useRef(null);
 
   useEffect(() => {
     fetchAgents().then(setAgents).catch(() => {});
+    fetchTowns().then(setTowns).catch(() => {});
   }, []);
 
   function handleAgent(e) {
     const value = e.target.value;
-    clearTimeout(debounceRef.current);
-    debounceRef.current = setTimeout(() => {
+    clearTimeout(agentDebounce.current);
+    agentDebounce.current = setTimeout(() => {
       onChange({ ...filters, agentName: value });
     }, 400);
   }
 
   function clearAgent() {
-    if (inputRef.current) inputRef.current.value = '';
+    if (agentRef.current) agentRef.current.value = '';
     onChange({ ...filters, agentName: '' });
   }
 
@@ -28,7 +30,7 @@ export default function FilterBar({ filters, onChange }) {
     <div className="filter-bar">
       <div className="filter-agent-wrap">
         <input
-          ref={inputRef}
+          ref={agentRef}
           type="text"
           list="agent-list"
           placeholder="Search by estate agent..."
@@ -45,6 +47,17 @@ export default function FilterBar({ filters, onChange }) {
           ))}
         </datalist>
       </div>
+
+      <select
+        value={filters.town}
+        onChange={e => onChange({ ...filters, town: e.target.value })}
+        className="filter-select"
+      >
+        <option value="">All towns</option>
+        {towns.map(t => (
+          <option key={t} value={t}>{t}</option>
+        ))}
+      </select>
 
       <label className="filter-check">
         <input
