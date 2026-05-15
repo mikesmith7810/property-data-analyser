@@ -1,5 +1,7 @@
 package com.mike;
 
+import com.mike.db.PropertySyncService;
+import com.mike.db.SyncResult;
 import com.mike.rightmove.Location;
 import com.mike.rightmove.LocationService;
 import com.mike.rightmove.Property;
@@ -26,6 +28,9 @@ public class PropertyResource {
 
     @Inject
     PropertyDetailService propertyDetailService;
+
+    @Inject
+    PropertySyncService propertySyncService;
 
     @GET
     @Path("/locations")
@@ -57,5 +62,23 @@ public class PropertyResource {
     @Produces(MediaType.APPLICATION_JSON)
     public PropertyDetail getPropertyDetail(@PathParam("propertyId") long propertyId) throws Exception {
         return propertyDetailService.getPropertyDetail(propertyId);
+    }
+
+    @GET
+    @Path("/sync")
+    @Produces(MediaType.APPLICATION_JSON)
+    public SyncResult syncProperties(
+            @QueryParam("locationId") String locationId,
+            @QueryParam("locationType") String locationType,
+            @QueryParam("radius") Double radius,
+            @QueryParam("propertyTypes") String propertyTypes,
+            @QueryParam("minPrice") Integer minPrice,
+            @QueryParam("maxPrice") Integer maxPrice,
+            @QueryParam("minBedrooms") Integer minBedrooms,
+            @QueryParam("maxBedrooms") Integer maxBedrooms
+    ) throws Exception {
+        return propertySyncService.syncProperties(
+                locationId, locationType, radius, propertyTypes, minPrice, maxPrice, minBedrooms, maxBedrooms
+        );
     }
 }

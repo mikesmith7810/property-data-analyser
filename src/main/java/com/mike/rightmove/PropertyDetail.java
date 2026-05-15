@@ -26,7 +26,11 @@ public record PropertyDetail(
         List<String> floorplanUrls,
         List<NearestStation> nearestStations,
         String listingUpdateReason,
-        boolean published
+        boolean published,
+        String preOwned,
+        String addedDate,
+        int numericPrice,
+        boolean soldSTC
 ) {
     public record NearestStation(String name, double distance, String unit) {}
 }

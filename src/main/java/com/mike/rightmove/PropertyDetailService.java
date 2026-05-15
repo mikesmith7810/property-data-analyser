@@ -1,9 +1,11 @@
 package com.mike.rightmove;
 
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import io.quarkus.logging.Log;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import java.util.ArrayList;
@@ -18,9 +20,13 @@ public class PropertyDetailService {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     public PropertyDetail getPropertyDetail(long propertyId) throws Exception {
+        Log.infof("Fetching detail for property %d", propertyId);
         String html = rightmoveClient.get("https://www.rightmove.co.uk/properties/" + propertyId);
         JsonNode[] nodes = parsePageModelNodes(html);
         JsonNode prop = resolveNode(nodes, nodes[1]);
+        // nodes[0] root: {"propertyData":1, "analyticsInfo":1521, ...}
+        JsonNode analyticsProperty = resolveNode(nodes, nodes[nodes[0].path("analyticsInfo").asInt()])
+                .path("analyticsProperty");
 
         JsonNode prices = prop.path("prices");
         JsonNode address = prop.path("address");
@@ -80,7 +86,11 @@ public class PropertyDetailService {
                 floorplanUrls,
                 stations,
                 listingHistory.path("listingUpdateReason").asText(""),
-                status.path("published").asBoolean(false)
+                status.path("published").asBoolean(false),
+                analyticsProperty.path("preOwned").asText(""),
+                analyticsProperty.path("added").asText(""),
+                analyticsProperty.path("price").asInt(),
+                analyticsProperty.path("soldSTC").asBoolean(false)
         );
     }
 
@@ -91,21 +101,17 @@ public class PropertyDetailService {
             throw new IllegalStateException("__PAGE_MODEL not found in Rightmove response");
         }
         start += marker.length();
-        int scriptClose = html.indexOf("</script>", start);
-        if (scriptClose == -1) {
-            throw new IllegalStateException("__PAGE_MODEL script close tag not found");
+        // Use a streaming parser starting at the JSON object so it stops naturally
+        // at the closing brace, ignoring any further JS statements in the same script block.
+        try (JsonParser parser = objectMapper.createParser(html.substring(start))) {
+            JsonNode pageModel = objectMapper.readTree(parser);
+            JsonNode dataArray = objectMapper.readTree(pageModel.get("data").asText());
+            JsonNode[] nodes = new JsonNode[dataArray.size()];
+            for (int i = 0; i < dataArray.size(); i++) {
+                nodes[i] = dataArray.get(i);
+            }
+            return nodes;
         }
-        String raw = html.substring(start, scriptClose).stripTrailing();
-        if (raw.endsWith(";")) {
-            raw = raw.substring(0, raw.length() - 1);
-        }
-        JsonNode pageModel = objectMapper.readTree(raw);
-        JsonNode dataArray = objectMapper.readTree(pageModel.get("data").asText());
-        JsonNode[] nodes = new JsonNode[dataArray.size()];
-        for (int i = 0; i < dataArray.size(); i++) {
-            nodes[i] = dataArray.get(i);
-        }
-        return nodes;
     }
 
     /**

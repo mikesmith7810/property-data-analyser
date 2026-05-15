@@ -21,7 +21,7 @@ public class LocationService {
         String url = "https://los.rightmove.co.uk/typeahead?query=" + encodedQuery + "&limit=" + limit + "&exclude=STREET";
         String body = rightmoveClient.get(url);
 
-p        JsonNode root = objectMapper.readTree(body);
+        JsonNode root = objectMapper.readTree(body);
         JsonNode matches = root.get("matches");
 
         List<Location> locations = new ArrayList<>();

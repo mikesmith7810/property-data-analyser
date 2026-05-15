@@ -27,9 +27,25 @@ public class PropertySearchService {
             Integer minBedrooms,
             Integer maxBedrooms
     ) throws Exception {
+        return searchPage(locationId, locationType, radius, propertyTypes,
+                minPrice, maxPrice, minBedrooms, maxBedrooms, 0).properties();
+    }
+
+    public SearchPage searchPage(
+            String locationId,
+            String locationType,
+            Double radius,
+            String propertyTypes,
+            Integer minPrice,
+            Integer maxPrice,
+            Integer minBedrooms,
+            Integer maxBedrooms,
+            int index
+    ) throws Exception {
         String locationIdentifier = URLEncoder.encode(locationType + "^" + locationId, StandardCharsets.UTF_8);
         StringBuilder url = new StringBuilder("https://www.rightmove.co.uk/property-for-sale/find.html?locationIdentifier=")
-                .append(locationIdentifier);
+                .append(locationIdentifier)
+                .append("&index=").append(index);
 
         if (radius != null) url.append("&radius=").append(radius);
         if (propertyTypes != null && !propertyTypes.isBlank()) url.append("&propertyTypes=").append(URLEncoder.encode(propertyTypes, StandardCharsets.UTF_8));
@@ -42,7 +58,9 @@ public class PropertySearchService {
         String json = extractNextData(html);
 
         JsonNode root = objectMapper.readTree(json);
-        JsonNode properties = root.path("props").path("pageProps").path("searchResults").path("properties");
+        JsonNode searchResults = root.path("props").path("pageProps").path("searchResults");
+        int totalResultCount = searchResults.path("resultCount").asInt(0);
+        JsonNode properties = searchResults.path("properties");
 
         List<Property> results = new ArrayList<>();
         for (JsonNode node : properties) {
@@ -97,7 +115,7 @@ public class PropertySearchService {
                     node.path("auction").asBoolean(false)
             ));
         }
-        return results;
+        return new SearchPage(results, totalResultCount);
     }
 
     private String extractNextData(String html) {
