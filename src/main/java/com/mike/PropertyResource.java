@@ -17,6 +17,8 @@ import com.mike.rightmove.PropertySearchService;
 import io.smallrye.common.annotation.Blocking;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
+import java.time.LocalDateTime;
 import jakarta.ws.rs.DefaultValue;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
@@ -135,6 +137,7 @@ public class PropertyResource {
     @GET
     @Path("/sync")
     @Produces(MediaType.APPLICATION_JSON)
+    @Blocking
     public SyncResult syncProperties(
             @QueryParam("locationId") String locationId,
             @QueryParam("locationType") String locationType,
@@ -145,8 +148,18 @@ public class PropertyResource {
             @QueryParam("minBedrooms") Integer minBedrooms,
             @QueryParam("maxBedrooms") Integer maxBedrooms
     ) throws Exception {
-        return propertySyncService.syncProperties(
-                locationId, locationType, radius, propertyTypes, minPrice, maxPrice, minBedrooms, maxBedrooms
-        );
+        SyncResult result = propertySyncService.syncProperties(
+                locationId, locationType, radius, propertyTypes, minPrice, maxPrice, minBedrooms, maxBedrooms);
+        stampLastSynced(locationId);
+        return result;
+    }
+
+    @Transactional
+    void stampLastSynced(String locationId) {
+        em.createQuery("SELECT s FROM SyncLocation s WHERE s.locationId = :lid", SyncLocation.class)
+                .setParameter("lid", locationId)
+                .getResultStream()
+                .findFirst()
+                .ifPresent(loc -> loc.lastSyncedAt = LocalDateTime.now());
     }
 }

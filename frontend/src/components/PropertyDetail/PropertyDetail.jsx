@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { fetchListing } from '../../api/listings';
 import ImageGallery from '../ImageGallery/ImageGallery';
+import { formatDate, formatAddedOrReduced } from '../../utils/dates';
 import './PropertyDetail.css';
 
 export default function PropertyDetail({ id }) {
@@ -71,13 +72,13 @@ export default function PropertyDetail({ id }) {
           {p.firstVisibleDate && (
             <div className="info-row">
               <span className="info-label">Listed</span>
-              <span>{p.firstVisibleDate}</span>
+              <span>{formatDate(p.firstVisibleDate)}</span>
             </div>
           )}
           {p.addedOrReduced && (
             <div className="info-row">
               <span className="info-label">Status</span>
-              <span>{p.addedOrReduced}</span>
+              <span>{formatAddedOrReduced(p.addedOrReduced)}</span>
             </div>
           )}
           {p.listingUpdateReason && (

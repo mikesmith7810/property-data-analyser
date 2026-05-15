@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { fetchSyncLocations, runSync } from '../../api/sync';
+import { formatDateTime } from '../../utils/dates';
 import './SyncPage.css';
 
 export default function SyncPage() {
@@ -40,6 +41,7 @@ export default function SyncPage() {
     try {
       const res = await runSync({ locationId, locationType, minBedrooms, maxPrice });
       setResult(res);
+      fetchSyncLocations().then(setLocations).catch(() => {});
     } catch (err) {
       setError(err.message);
     } finally {
@@ -65,7 +67,9 @@ export default function SyncPage() {
             disabled={syncing}
           >
             {locations.map(l => (
-              <option key={l.locationId} value={l.locationId}>{l.name}</option>
+              <option key={l.locationId} value={l.locationId}>
+                {l.name}{l.lastSyncedAt ? ` — last synced ${formatDateTime(l.lastSyncedAt)}` : ''}
+              </option>
             ))}
           </select>
         </div>
