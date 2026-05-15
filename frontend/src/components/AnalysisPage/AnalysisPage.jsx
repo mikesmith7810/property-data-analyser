@@ -7,9 +7,8 @@ function fmt(n) {
   return `£${Math.round(n).toLocaleString('en-GB')}`;
 }
 
-function BarChart({ data }) {
+function BarChart({ data, scaleMax }) {
   if (!data?.length) return null;
-  const max = Math.max(...data.map(d => d.avgPrice));
 
   return (
     <div className="bar-chart">
@@ -18,7 +17,7 @@ function BarChart({ data }) {
           <div className="bar-price">{fmt(d.avgPrice)}</div>
           <div
             className="bar-fill"
-            style={{ height: `${Math.round((d.avgPrice / max) * 100)}%` }}
+            style={{ height: `${Math.round((d.avgPrice / scaleMax) * 100)}%` }}
           />
           <div className="bar-label">
             {d.bedrooms} {d.bedrooms === 1 ? 'bed' : 'beds'}
@@ -33,7 +32,8 @@ function BarChart({ data }) {
 export default function AnalysisPage() {
   const [locations, setLocations] = useState([]);
   const [town, setTown] = useState('');
-  const [data, setData] = useState(null);
+  const [allData, setAllData] = useState({});
+  const [globalMax, setGlobalMax] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -42,19 +42,29 @@ export default function AnalysisPage() {
       .then(locs => {
         setLocations(locs);
         if (locs.length > 0) setTown(locs[0].name);
+
+        // Fetch all locations in parallel to establish a consistent scale
+        setLoading(true);
+        Promise.all(
+          [...locs.map(l => fetchAvgPriceByBedrooms(l.name)), fetchAvgPriceByBedrooms('')]
+        ).then(results => {
+          const map = {};
+          locs.forEach((l, i) => { map[l.name] = results[i]; });
+          map[''] = results[locs.length];
+          setAllData(map);
+
+          const max = Math.max(
+            1,
+            ...Object.values(map).flat().map(r => r.avgPrice)
+          );
+          setGlobalMax(max);
+        }).catch(err => setError(err.message))
+          .finally(() => setLoading(false));
       })
       .catch(() => {});
   }, []);
 
-  useEffect(() => {
-    if (!town) return;
-    setLoading(true);
-    setError(null);
-    fetchAvgPriceByBedrooms(town)
-      .then(setData)
-      .catch(err => setError(err.message))
-      .finally(() => setLoading(false));
-  }, [town]);
+  const data = allData[town] ?? null;
 
   return (
     <div className="analysis-page">
@@ -80,7 +90,7 @@ export default function AnalysisPage() {
 
         {data && !loading && (
           <>
-            <BarChart data={data} />
+            <BarChart data={data} scaleMax={globalMax} />
             <table className="analysis-table">
               <thead>
                 <tr>
