@@ -1,0 +1,16 @@
+.property-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.list-meta {
+  font-size: 0.875rem;
+  color: var(--color-muted);
+  margin-bottom: 0.75rem;
+}
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(var(--card-min), 1fr));
+  gap: 1rem;
+}

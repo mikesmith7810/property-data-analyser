@@ -1,5 +1,9 @@
 package com.mike;
 
+import com.mike.db.PropertyListingPage;
+import com.mike.db.PropertyListing;
+import com.mike.db.PropertyListingQuery;
+import com.mike.db.PropertyListingService;
 import com.mike.db.PropertySyncService;
 import com.mike.db.SyncResult;
 import com.mike.rightmove.Location;
@@ -8,13 +12,16 @@ import com.mike.rightmove.Property;
 import com.mike.rightmove.PropertyDetail;
 import com.mike.rightmove.PropertyDetailService;
 import com.mike.rightmove.PropertySearchService;
+import io.smallrye.common.annotation.Blocking;
 import jakarta.inject.Inject;
+import jakarta.ws.rs.DefaultValue;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import java.util.List;
 
 @Path("/property")
@@ -31,6 +38,9 @@ public class PropertyResource {
 
     @Inject
     PropertySyncService propertySyncService;
+
+    @Inject
+    PropertyListingService propertyListingService;
 
     @GET
     @Path("/locations")
@@ -55,6 +65,31 @@ public class PropertyResource {
         return propertySearchService.searchProperties(
                 locationId, locationType, radius, propertyTypes, minPrice, maxPrice, minBedrooms, maxBedrooms
         );
+    }
+
+    @GET
+    @Path("/listings")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Blocking
+    public PropertyListingPage getListings(
+            @QueryParam("agentName") String agentName,
+            @QueryParam("reduced") @DefaultValue("false") boolean reducedOnly,
+            @QueryParam("sortBy") @DefaultValue("daysOnMarket") String sortBy,
+            @QueryParam("page") @DefaultValue("0") int page,
+            @QueryParam("size") @DefaultValue("20") int size
+    ) {
+        return propertyListingService.queryListings(
+                new PropertyListingQuery(agentName, reducedOnly, sortBy, page, size));
+    }
+
+    @GET
+    @Path("/listings/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Blocking
+    public Response getListingById(@PathParam("id") long id) {
+        PropertyListing listing = propertyListingService.findById(id);
+        if (listing == null) return Response.status(Response.Status.NOT_FOUND).build();
+        return Response.ok(listing).build();
     }
 
     @GET
