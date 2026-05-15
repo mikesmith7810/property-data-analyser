@@ -1,6 +1,8 @@
 package com.mike;
 
 import com.mike.db.AgentCount;
+import com.mike.db.AnalysisService;
+import com.mike.db.AvgPriceByBedrooms;
 import com.mike.db.SyncLocation;
 import com.mike.db.PropertyListingPage;
 import com.mike.db.PropertyListing;
@@ -50,6 +52,9 @@ public class PropertyResource {
     @Inject
     EntityManager em;
 
+    @Inject
+    AnalysisService analysisService;
+
     @GET
     @Path("/locations")
     @Produces(MediaType.APPLICATION_JSON)
@@ -73,6 +78,14 @@ public class PropertyResource {
         return propertySearchService.searchProperties(
                 locationId, locationType, radius, propertyTypes, minPrice, maxPrice, minBedrooms, maxBedrooms
         );
+    }
+
+    @GET
+    @Path("/analysis/avg-price-by-bedrooms")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Blocking
+    public List<AvgPriceByBedrooms> avgPriceByBedrooms(@QueryParam("town") String town) {
+        return analysisService.avgPriceByBedrooms(town);
     }
 
     @GET

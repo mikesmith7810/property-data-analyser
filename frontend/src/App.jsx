@@ -3,6 +3,7 @@ import FilterBar from './components/FilterBar/FilterBar';
 import PropertyList from './components/PropertyList/PropertyList';
 import PropertyDetail from './components/PropertyDetail/PropertyDetail';
 import SyncPage from './components/SyncPage/SyncPage';
+import AnalysisPage from './components/AnalysisPage/AnalysisPage';
 import './App.css';
 
 export default function App() {
@@ -33,6 +34,12 @@ export default function App() {
               Search
             </button>
             <button
+              className={`header-tab${view === 'analysis' ? ' active' : ''}`}
+              onClick={() => setView('analysis')}
+            >
+              Analysis
+            </button>
+            <button
               className={`header-tab${view === 'sync' ? ' active' : ''}`}
               onClick={() => setView('sync')}
             >
@@ -47,6 +54,8 @@ export default function App() {
       <main className="app-main">
         {view === 'sync' ? (
           <SyncPage />
+        ) : view === 'analysis' ? (
+          <AnalysisPage />
         ) : view === 'detail' ? (
           <PropertyDetail id={selectedId} />
         ) : (
