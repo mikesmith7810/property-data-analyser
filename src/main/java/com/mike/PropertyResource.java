@@ -83,12 +83,13 @@ public class PropertyResource {
     public PropertyListingPage getListings(
             @QueryParam("agentName") String agentName,
             @QueryParam("reduced") @DefaultValue("false") boolean reducedOnly,
+            @QueryParam("newHome") @DefaultValue("false") boolean newHomeOnly,
             @QueryParam("sortBy") @DefaultValue("daysOnMarket") String sortBy,
             @QueryParam("page") @DefaultValue("0") int page,
             @QueryParam("size") @DefaultValue("20") int size
     ) {
         return propertyListingService.queryListings(
-                new PropertyListingQuery(agentName, reducedOnly, sortBy, page, size));
+                new PropertyListingQuery(agentName, reducedOnly, newHomeOnly, sortBy, page, size));
     }
 
     @GET

@@ -55,6 +55,15 @@ export default function FilterBar({ filters, onChange }) {
         Reduced only
       </label>
 
+      <label className="filter-check">
+        <input
+          type="checkbox"
+          checked={filters.newHome}
+          onChange={e => onChange({ ...filters, newHome: e.target.checked })}
+        />
+        New homes only
+      </label>
+
       <select
         value={filters.sortBy}
         onChange={e => onChange({ ...filters, sortBy: e.target.value })}

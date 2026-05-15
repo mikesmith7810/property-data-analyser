@@ -21,6 +21,9 @@ public class PropertyListingService {
         if (query.reducedOnly()) {
             conditions.add("LOWER(p.addedOrReduced) LIKE 'reduced%'");
         }
+        if (query.newHomeOnly()) {
+            conditions.add("p.preOwned = 'New Home'");
+        }
 
         String where = conditions.isEmpty() ? "" : "WHERE " + String.join(" AND ", conditions);
         String order = switch (query.sortBy() == null ? "" : query.sortBy()) {

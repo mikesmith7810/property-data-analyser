@@ -1,9 +1,10 @@
 const BASE = 'http://localhost:8080';
 
-export async function fetchListings({ agentName, reduced, sortBy, page = 0, size = 20 } = {}) {
+export async function fetchListings({ agentName, reduced, newHome, sortBy, page = 0, size = 20 } = {}) {
   const params = new URLSearchParams();
   if (agentName) params.set('agentName', agentName);
   if (reduced)   params.set('reduced', 'true');
+  if (newHome)   params.set('newHome', 'true');
   if (sortBy)    params.set('sortBy', sortBy);
   params.set('page', page);
   params.set('size', size);

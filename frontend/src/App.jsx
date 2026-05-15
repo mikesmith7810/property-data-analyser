@@ -7,7 +7,7 @@ import './App.css';
 export default function App() {
   const [view, setView] = useState('list');
   const [selectedId, setSelectedId] = useState(null);
-  const [filters, setFilters] = useState({ agentName: '', reduced: false, sortBy: 'daysOnMarket' });
+  const [filters, setFilters] = useState({ agentName: '', reduced: false, newHome: false, sortBy: 'daysOnMarket' });
 
   function openDetail(id) {
     setSelectedId(id);

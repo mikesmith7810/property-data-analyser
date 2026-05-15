@@ -2,6 +2,7 @@ import './PropertyCard.css';
 
 export default function PropertyCard({ property: p, onClick }) {
   const isReduced = p.addedOrReduced?.toLowerCase().startsWith('reduced');
+  const isNewHome = p.preOwned === 'New Home';
   const imgSrc = p.mainImageUrl || p.imageUrls?.[0];
 
   return (
@@ -12,7 +13,10 @@ export default function PropertyCard({ property: p, onClick }) {
         ) : (
           <div className="card-img-placeholder">No image</div>
         )}
-        {isReduced && <span className="badge badge-reduced">Reduced</span>}
+        <div className="card-badges-left">
+          {isReduced && <span className="badge badge-reduced">Reduced</span>}
+          {isNewHome && <span className="badge badge-new">New Home</span>}
+        </div>
         {p.soldSTC && <span className="badge badge-stc">Sold STC</span>}
       </div>
       <div className="card-body">

@@ -40,9 +40,16 @@
   font-size: 0.875rem;
 }
 
-.badge {
+.card-badges-left {
   position: absolute;
   top: 0.5rem;
+  left: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.badge {
   padding: 0.2rem 0.5rem;
   border-radius: 4px;
   font-size: 0.75rem;
@@ -51,11 +58,16 @@
 }
 
 .badge-reduced {
-  left: 0.5rem;
   background: var(--color-reduced);
 }
 
+.badge-new {
+  background: var(--color-primary);
+}
+
 .badge-stc {
+  position: absolute;
+  top: 0.5rem;
   right: 0.5rem;
   background: var(--color-stc);
   color: #333;
