@@ -24,5 +24,5 @@ export default defineConfig({
       devOptions: { enabled: true },
     }),
   ],
-  server: { port: 5173, allowedHosts: 'all' },
+  server: { port: 5173, allowedHosts: true },
 });
