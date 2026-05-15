@@ -36,7 +36,7 @@ export default function PropertyDetail({ id }) {
         <div className="detail-badges">
           {isReduced && <span className="badge badge-reduced">Reduced</span>}
           {p.soldSTC && <span className="badge badge-stc">Sold STC</span>}
-          {p.preOwned === 'New build' && <span className="badge badge-new">New build</span>}
+          {p.preOwned === 'New Home' && <span className="badge badge-new">New Home</span>}
         </div>
 
         <h2 className="detail-price">
