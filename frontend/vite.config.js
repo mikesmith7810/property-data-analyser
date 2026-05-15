@@ -12,7 +12,7 @@ export default defineConfig({
         globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
         runtimeCaching: [
           {
-            urlPattern: /^http:\/\/localhost:8080\/property\/listings/,
+            urlPattern: /^\/property\/listings/,
             handler: 'NetworkFirst',
             options: {
               cacheName: 'api-listings',
@@ -24,5 +24,11 @@ export default defineConfig({
       devOptions: { enabled: true },
     }),
   ],
-  server: { port: 5173, allowedHosts: true },
+  server: {
+    port: 5173,
+    allowedHosts: true,
+    proxy: {
+      '/property': 'http://localhost:8080',
+    },
+  },
 });
