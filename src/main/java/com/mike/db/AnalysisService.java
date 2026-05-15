@@ -14,7 +14,7 @@ public class AnalysisService {
     @SuppressWarnings("unchecked")
     public List<AvgPriceByBedrooms> avgPriceByBedrooms(String town) {
         boolean filterTown = town != null && !town.isBlank();
-        String where = "WHERE p.price > 0"
+        String where = "WHERE p.price > 0 AND p.bedrooms BETWEEN 1 AND 6"
                 + (filterTown ? " AND LOWER(p.displayAddress) LIKE :town" : "");
 
         var query = em.createQuery(
@@ -31,7 +31,6 @@ public class AnalysisService {
                         ((Number) r[0]).intValue(),
                         Math.round((Double) r[1]),
                         (Long) r[2]))
-                .filter(r -> r.bedrooms() > 0)
                 .toList();
     }
 }
