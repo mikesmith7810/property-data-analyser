@@ -1,6 +1,7 @@
 package com.mike;
 
 import com.mike.db.AgentCount;
+import com.mike.db.SyncLocation;
 import com.mike.db.PropertyListingPage;
 import com.mike.db.PropertyListing;
 import com.mike.db.PropertyListingQuery;
@@ -15,6 +16,7 @@ import com.mike.rightmove.PropertyDetailService;
 import com.mike.rightmove.PropertySearchService;
 import io.smallrye.common.annotation.Blocking;
 import jakarta.inject.Inject;
+import jakarta.persistence.EntityManager;
 import jakarta.ws.rs.DefaultValue;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
@@ -43,6 +45,9 @@ public class PropertyResource {
     @Inject
     PropertyListingService propertyListingService;
 
+    @Inject
+    EntityManager em;
+
     @GET
     @Path("/locations")
     @Produces(MediaType.APPLICATION_JSON)
@@ -66,6 +71,15 @@ public class PropertyResource {
         return propertySearchService.searchProperties(
                 locationId, locationType, radius, propertyTypes, minPrice, maxPrice, minBedrooms, maxBedrooms
         );
+    }
+
+    @GET
+    @Path("/sync-locations")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Blocking
+    public List<SyncLocation> getSyncLocations() {
+        return em.createQuery("SELECT s FROM SyncLocation s ORDER BY s.name", SyncLocation.class)
+                .getResultList();
     }
 
     @GET

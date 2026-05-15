@@ -26,7 +26,34 @@
 .header-title {
   font-size: 1.125rem;
   font-weight: 600;
+  margin-right: 1rem;
+}
+
+.header-tabs {
+  display: flex;
+  gap: 0.25rem;
   flex: 1;
+}
+
+.header-tab {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.75);
+  padding: 0.375rem 0.875rem;
+  border-radius: var(--radius);
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: background 0.15s, color 0.15s;
+}
+
+.header-tab:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+}
+
+.header-tab.active {
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
 }
 
 .btn-back {

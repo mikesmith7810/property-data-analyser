@@ -2,6 +2,7 @@ import { useState } from 'react';
 import FilterBar from './components/FilterBar/FilterBar';
 import PropertyList from './components/PropertyList/PropertyList';
 import PropertyDetail from './components/PropertyDetail/PropertyDetail';
+import SyncPage from './components/SyncPage/SyncPage';
 import './App.css';
 
 export default function App() {
@@ -14,7 +15,7 @@ export default function App() {
     setView('detail');
   }
 
-  function backToList() {
+  function goToList() {
     setView('list');
     setSelectedId(null);
   }
@@ -24,19 +25,35 @@ export default function App() {
       <header className="app-header">
         <div className="header-inner">
           <h1 className="header-title">Property Search</h1>
+          <nav className="header-tabs">
+            <button
+              className={`header-tab${view !== 'sync' ? ' active' : ''}`}
+              onClick={goToList}
+            >
+              Search
+            </button>
+            <button
+              className={`header-tab${view === 'sync' ? ' active' : ''}`}
+              onClick={() => setView('sync')}
+            >
+              Sync
+            </button>
+          </nav>
           {view === 'detail' && (
-            <button className="btn-back" onClick={backToList}>← Back to results</button>
+            <button className="btn-back" onClick={goToList}>← Back</button>
           )}
         </div>
       </header>
       <main className="app-main">
-        {view === 'list' ? (
+        {view === 'sync' ? (
+          <SyncPage />
+        ) : view === 'detail' ? (
+          <PropertyDetail id={selectedId} />
+        ) : (
           <>
             <FilterBar filters={filters} onChange={setFilters} />
             <PropertyList filters={filters} onSelect={openDetail} />
           </>
-        ) : (
-          <PropertyDetail id={selectedId} />
         )}
       </main>
     </div>
