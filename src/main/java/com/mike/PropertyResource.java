@@ -1,5 +1,6 @@
 package com.mike;
 
+import com.mike.db.AgentCount;
 import com.mike.db.PropertyListingPage;
 import com.mike.db.PropertyListing;
 import com.mike.db.PropertyListingQuery;
@@ -65,6 +66,14 @@ public class PropertyResource {
         return propertySearchService.searchProperties(
                 locationId, locationType, radius, propertyTypes, minPrice, maxPrice, minBedrooms, maxBedrooms
         );
+    }
+
+    @GET
+    @Path("/agents")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Blocking
+    public List<AgentCount> getAgents() {
+        return propertyListingService.findAgents();
     }
 
     @GET

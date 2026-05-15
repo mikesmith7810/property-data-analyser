@@ -50,4 +50,19 @@ public class PropertyListingService {
     public PropertyListing findById(long id) {
         return em.find(PropertyListing.class, id);
     }
+
+    @SuppressWarnings("unchecked")
+    public List<AgentCount> findAgents() {
+        return em.createQuery(
+                "SELECT p.branchName, COUNT(p) FROM PropertyListing p" +
+                " WHERE p.branchName IS NOT NULL AND p.branchName <> ''" +
+                " GROUP BY p.branchName ORDER BY COUNT(p) DESC")
+                .getResultList()
+                .stream()
+                .map(row -> {
+                    Object[] r = (Object[]) row;
+                    return new AgentCount((String) r[0], (Long) r[1]);
+                })
+                .toList();
+    }
 }

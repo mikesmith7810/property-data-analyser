@@ -17,3 +17,9 @@ export async function fetchListing(id) {
   if (!res.ok) throw new Error(`Listing ${id} not found`);
   return res.json();
 }
+
+export async function fetchAgents() {
+  const res = await fetch(`${BASE}/property/agents`);
+  if (!res.ok) throw new Error(`Failed to fetch agents: ${res.status}`);
+  return res.json();
+}
