@@ -10,15 +10,14 @@ import jakarta.ws.rs.ext.Provider;
 @Provider
 public class CorsFilter implements ContainerRequestFilter, ContainerResponseFilter {
 
-    private static final String ORIGIN = "http://localhost:5173";
-
     @Override
     public void filter(ContainerRequestContext req) {
         if ("OPTIONS".equalsIgnoreCase(req.getMethod())) {
+            String origin = origin(req);
             req.abortWith(Response.ok()
-                    .header("Access-Control-Allow-Origin", ORIGIN)
+                    .header("Access-Control-Allow-Origin", origin)
                     .header("Access-Control-Allow-Methods", "GET, OPTIONS")
-                    .header("Access-Control-Allow-Headers", "Accept, Content-Type")
+                    .header("Access-Control-Allow-Headers", "Accept, Content-Type, ngrok-skip-browser-warning")
                     .header("Access-Control-Max-Age", "86400")
                     .build());
         }
@@ -26,8 +25,13 @@ public class CorsFilter implements ContainerRequestFilter, ContainerResponseFilt
 
     @Override
     public void filter(ContainerRequestContext req, ContainerResponseContext res) {
-        res.getHeaders().add("Access-Control-Allow-Origin", ORIGIN);
+        res.getHeaders().add("Access-Control-Allow-Origin", origin(req));
         res.getHeaders().add("Access-Control-Allow-Methods", "GET, OPTIONS");
-        res.getHeaders().add("Access-Control-Allow-Headers", "Accept, Content-Type");
+        res.getHeaders().add("Access-Control-Allow-Headers", "Accept, Content-Type, ngrok-skip-browser-warning");
+    }
+
+    private String origin(ContainerRequestContext req) {
+        String origin = req.getHeaderString("Origin");
+        return origin != null ? origin : "*";
     }
 }

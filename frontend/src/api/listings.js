@@ -1,4 +1,5 @@
-const BASE = 'http://localhost:8080';
+const BASE = 'https://151f-2-103-145-212.ngrok-free.app';
+const HEADERS = { 'ngrok-skip-browser-warning': 'true' };
 
 export async function fetchListings({ agentName, town, reduced, newHome, sortBy, page = 0, size = 20 } = {}) {
   const params = new URLSearchParams();
@@ -9,25 +10,25 @@ export async function fetchListings({ agentName, town, reduced, newHome, sortBy,
   if (sortBy)    params.set('sortBy', sortBy);
   params.set('page', page);
   params.set('size', size);
-  const res = await fetch(`${BASE}/property/listings?${params}`);
+  const res = await fetch(`${BASE}/property/listings?${params}`, { headers: HEADERS });
   if (!res.ok) throw new Error(`Failed to fetch listings: ${res.status}`);
   return res.json();
 }
 
 export async function fetchListing(id) {
-  const res = await fetch(`${BASE}/property/listings/${id}`);
+  const res = await fetch(`${BASE}/property/listings/${id}`, { headers: HEADERS });
   if (!res.ok) throw new Error(`Listing ${id} not found`);
   return res.json();
 }
 
 export async function fetchAgents() {
-  const res = await fetch(`${BASE}/property/agents`);
+  const res = await fetch(`${BASE}/property/agents`, { headers: HEADERS });
   if (!res.ok) throw new Error(`Failed to fetch agents: ${res.status}`);
   return res.json();
 }
 
 export async function fetchTowns() {
-  const res = await fetch(`${BASE}/property/towns`);
+  const res = await fetch(`${BASE}/property/towns`, { headers: HEADERS });
   if (!res.ok) throw new Error(`Failed to fetch towns: ${res.status}`);
   return res.json();
 }
