@@ -1,7 +1,7 @@
 import './PropertyCard.css';
 
 export default function PropertyCard({ property: p, onClick }) {
-  const isReduced = p.addedOrReduced === 'Reduced';
+  const isReduced = p.addedOrReduced?.toLowerCase().startsWith('reduced');
   const imgSrc = p.mainImageUrl || p.imageUrls?.[0];
 
   return (

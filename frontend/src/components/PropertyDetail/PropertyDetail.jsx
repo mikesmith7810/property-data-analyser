@@ -25,7 +25,7 @@ export default function PropertyDetail({ id }) {
 
   const p = listing;
   const allImages = [...(p.imageUrls ?? []), ...(p.floorplanUrls ?? [])];
-  const isReduced = p.addedOrReduced === 'Reduced';
+  const isReduced = p.addedOrReduced?.toLowerCase().startsWith('reduced');
   const rmUrl = `https://www.rightmove.co.uk${p.propertyUrl ?? ''}`;
 
   return (

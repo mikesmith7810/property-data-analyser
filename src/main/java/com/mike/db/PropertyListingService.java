@@ -19,7 +19,7 @@ public class PropertyListingService {
             conditions.add("LOWER(p.branchName) LIKE :agentName");
         }
         if (query.reducedOnly()) {
-            conditions.add("p.addedOrReduced = 'Reduced'");
+            conditions.add("LOWER(p.addedOrReduced) LIKE 'reduced%'");
         }
 
         String where = conditions.isEmpty() ? "" : "WHERE " + String.join(" AND ", conditions);
