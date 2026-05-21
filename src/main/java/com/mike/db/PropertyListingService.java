@@ -43,6 +43,21 @@ public class PropertyListingService {
         if (query.newHomeOnly()) {
             conditions.add("p.preOwned = 'New Home'");
         }
+        if (query.vacantOnly()) {
+            conditions.add("(LOWER(p.description) LIKE '%vacant possession%'" +
+                    " OR LOWER(p.description) LIKE '%no chain%'" +
+                    " OR LOWER(p.description) LIKE '%chain free%'" +
+                    " OR LOWER(p.description) LIKE '%no onward chain%'" +
+                    " OR LOWER(p.summary) LIKE '%vacant%'" +
+                    " OR LOWER(p.summary) LIKE '%chain free%'" +
+                    " OR LOWER(p.summary) LIKE '%no chain%'" +
+                    " OR LOWER(p.keyFeatures) LIKE '%vacant%'" +
+                    " OR LOWER(p.keyFeatures) LIKE '%chain free%'" +
+                    " OR LOWER(p.keyFeatures) LIKE '%no chain%')");
+        }
+        if (query.beds() > 0) {
+            conditions.add("p.bedrooms = :beds");
+        }
 
         String where = conditions.isEmpty() ? "" : "WHERE " + String.join(" AND ", conditions);
         String order = switch (query.sortBy() == null ? "" : query.sortBy()) {
@@ -66,6 +81,10 @@ public class PropertyListingService {
             listQ.setParameter("town", param);
             countQ.setParameter("town", param);
         }
+        if (query.beds() > 0) {
+            listQ.setParameter("beds", query.beds());
+            countQ.setParameter("beds", query.beds());
+        }
 
         int size = query.size() > 0 ? query.size() : 20;
         listQ.setFirstResult(query.page() * size);
@@ -76,6 +95,14 @@ public class PropertyListingService {
 
     public PropertyListing findById(long id) {
         return em.find(PropertyListing.class, id);
+    }
+
+    public List<PropertyListing> findByIds(List<Long> ids) {
+        if (ids.isEmpty()) return List.of();
+        return em.createQuery(
+                "SELECT p FROM PropertyListing p WHERE p.id IN :ids", PropertyListing.class)
+                .setParameter("ids", ids)
+                .getResultList();
     }
 
     public List<String> findTowns() {

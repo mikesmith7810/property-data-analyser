@@ -1,12 +1,24 @@
 import './PropertyCard.css';
 
-export default function PropertyCard({ property: p, onClick }) {
+function sharpenUrl(url) {
+  if (!url) return url;
+  return url.replace(/_max_\d+x\d+/, '_max_656x437');
+}
+
+export default function PropertyCard({ property: p, onClick, showSaveCheckbox, isSaved, onToggleSave }) {
   const isReduced = p.addedOrReduced?.toLowerCase().startsWith('reduced');
   const isNewHome = p.preOwned === 'New Home';
-  const imgSrc = p.mainImageUrl || p.imageUrls?.[0];
+  const imgSrc = sharpenUrl(p.mainImageUrl || p.imageUrls?.[0]);
+  const extraImgs = [p.imageUrls?.[1], p.imageUrls?.[2], p.imageUrls?.[3]].filter(Boolean);
 
   return (
-    <button className="property-card" onClick={onClick}>
+    <div
+      role="button"
+      tabIndex={0}
+      className="property-card"
+      onClick={onClick}
+      onKeyDown={e => { if (e.key === 'Enter') onClick(); }}
+    >
       <div className="card-img-wrap">
         {imgSrc ? (
           <img src={imgSrc} alt={p.displayAddress} loading="lazy" className="card-img" />
@@ -19,6 +31,13 @@ export default function PropertyCard({ property: p, onClick }) {
         </div>
         {p.soldSTC && <span className="badge badge-stc">Sold STC</span>}
       </div>
+      {extraImgs.length > 0 && (
+        <div className="card-img-strip">
+          {extraImgs.map((url, i) => (
+            <img key={i} src={sharpenUrl(url)} alt="" loading="lazy" className="card-img-strip-thumb" />
+          ))}
+        </div>
+      )}
       <div className="card-body">
         <div className="card-price">
           {p.priceDisplay || (p.price ? `£${p.price.toLocaleString()}` : 'POA')}
@@ -30,7 +49,13 @@ export default function PropertyCard({ property: p, onClick }) {
           {p.propertySubType && <span>{p.propertySubType}</span>}
         </div>
         <div className="card-agent">{p.branchName}</div>
+        {showSaveCheckbox && (
+          <label className="card-save-checkbox" onClick={e => e.stopPropagation()}>
+            <input type="checkbox" checked={isSaved} onChange={onToggleSave} />
+            Save
+          </label>
+        )}
       </div>
-    </button>
+    </div>
   );
 }

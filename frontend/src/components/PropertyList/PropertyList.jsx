@@ -1,33 +1,41 @@
 import { useState, useEffect } from 'react';
 import { fetchListings } from '../../api/listings';
+import { addToList, removeFromList } from '../../api/savedLists';
 import PropertyCard from '../PropertyCard/PropertyCard';
-import Pagination from '../Pagination/Pagination';
 import './PropertyList.css';
 
-export default function PropertyList({ filters, onSelect }) {
-  const [page, setPage] = useState(0);
+export default function PropertyList({ filters, onSelect, activeList, savedPropertyIds, onSavedPropertyIdsChange }) {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    setPage(0);
-  }, [filters]);
-
-  useEffect(() => {
     setLoading(true);
     setError(null);
-    fetchListings({ ...filters, page, size: 20 })
+    fetchListings({ ...filters, page: 0, size: 500 })
       .then(setData)
       .catch(err => setError(err.message))
       .finally(() => setLoading(false));
-  }, [filters, page]);
+  }, [filters]);
+
+  async function handleToggleSave(propertyId) {
+    if (!activeList) return;
+    if (savedPropertyIds.has(propertyId)) {
+      await removeFromList(activeList.id, propertyId);
+      onSavedPropertyIdsChange(prev => {
+        const next = new Set(prev);
+        next.delete(propertyId);
+        return next;
+      });
+    } else {
+      await addToList(activeList.id, propertyId);
+      onSavedPropertyIdsChange(prev => new Set([...prev, propertyId]));
+    }
+  }
 
   if (loading) return <div className="status">Loading...</div>;
   if (error) return <div className="status error">{error}</div>;
   if (!data) return null;
-
-  const totalPages = Math.ceil(data.totalCount / data.size);
 
   return (
     <div className="property-list">
@@ -35,16 +43,18 @@ export default function PropertyList({ filters, onSelect }) {
       {data.listings.length === 0 ? (
         <div className="status">No properties match your filters.</div>
       ) : (
-        <>
-          <div className="card-grid">
-            {data.listings.map(p => (
-              <PropertyCard key={p.id} property={p} onClick={() => onSelect(p.id)} />
-            ))}
-          </div>
-          {totalPages > 1 && (
-            <Pagination page={page} totalPages={totalPages} onChange={setPage} />
-          )}
-        </>
+        <div className="card-grid">
+          {data.listings.map(p => (
+            <PropertyCard
+              key={p.id}
+              property={p}
+              onClick={() => onSelect(p.id)}
+              showSaveCheckbox={activeList !== null}
+              isSaved={savedPropertyIds?.has(p.id) ?? false}
+              onToggleSave={() => handleToggleSave(p.id)}
+            />
+          ))}
+        </div>
       )}
     </div>
   );

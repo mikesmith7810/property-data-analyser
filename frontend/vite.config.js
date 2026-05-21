@@ -29,6 +29,7 @@ export default defineConfig({
     allowedHosts: true,
     proxy: {
       '/property': 'http://localhost:8080',
+      '/saved-lists': 'http://localhost:8080',
     },
   },
 });
