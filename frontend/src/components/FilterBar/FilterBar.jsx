@@ -77,6 +77,29 @@ export default function FilterBar({ filters, onChange }) {
         New homes only
       </label>
 
+      <label className="filter-check">
+        <input
+          type="checkbox"
+          checked={filters.vacant}
+          onChange={e => onChange({ ...filters, vacant: e.target.checked })}
+        />
+        Chain free / vacant
+      </label>
+
+      <select
+        value={filters.minBeds}
+        onChange={e => onChange({ ...filters, minBeds: Number(e.target.value) })}
+        className="filter-select"
+      >
+        <option value={0}>Any beds</option>
+        <option value={1}>1 bed</option>
+        <option value={2}>2 beds</option>
+        <option value={3}>3 beds</option>
+        <option value={4}>4 beds</option>
+        <option value={5}>5 beds</option>
+        <option value={6}>6 beds</option>
+      </select>
+
       <select
         value={filters.sortBy}
         onChange={e => onChange({ ...filters, sortBy: e.target.value })}

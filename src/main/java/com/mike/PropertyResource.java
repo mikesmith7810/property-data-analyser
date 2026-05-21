@@ -84,8 +84,10 @@ public class PropertyResource {
     @Path("/analysis/avg-price-by-bedrooms")
     @Produces(MediaType.APPLICATION_JSON)
     @Blocking
-    public List<AvgPriceByBedrooms> avgPriceByBedrooms(@QueryParam("town") String town) {
-        return analysisService.avgPriceByBedrooms(town);
+    public List<AvgPriceByBedrooms> avgPriceByBedrooms(
+            @QueryParam("town") String town,
+            @QueryParam("newHome") @DefaultValue("false") boolean newHome) {
+        return analysisService.avgPriceByBedrooms(town, newHome);
     }
 
     @GET
@@ -122,12 +124,14 @@ public class PropertyResource {
             @QueryParam("town") String town,
             @QueryParam("reduced") @DefaultValue("false") boolean reducedOnly,
             @QueryParam("newHome") @DefaultValue("false") boolean newHomeOnly,
+            @QueryParam("vacant") @DefaultValue("false") boolean vacantOnly,
+            @QueryParam("beds") @DefaultValue("0") int beds,
             @QueryParam("sortBy") @DefaultValue("daysOnMarket") String sortBy,
             @QueryParam("page") @DefaultValue("0") int page,
             @QueryParam("size") @DefaultValue("20") int size
     ) {
         return propertyListingService.queryListings(
-                new PropertyListingQuery(agentName, town, reducedOnly, newHomeOnly, sortBy, page, size));
+                new PropertyListingQuery(agentName, town, reducedOnly, newHomeOnly, vacantOnly, beds, sortBy, page, size));
     }
 
     @GET

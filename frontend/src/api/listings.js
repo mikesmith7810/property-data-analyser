@@ -1,12 +1,14 @@
 const HEADERS = { 'ngrok-skip-browser-warning': 'true' };
 
-export async function fetchListings({ agentName, town, reduced, newHome, sortBy, page = 0, size = 20 } = {}) {
+export async function fetchListings({ agentName, town, reduced, newHome, vacant, minBeds, sortBy, page = 0, size = 20 } = {}) {
   const params = new URLSearchParams();
-  if (agentName) params.set('agentName', agentName);
-  if (town)      params.set('town', town);
-  if (reduced)   params.set('reduced', 'true');
-  if (newHome)   params.set('newHome', 'true');
-  if (sortBy)    params.set('sortBy', sortBy);
+  if (agentName)    params.set('agentName', agentName);
+  if (town)         params.set('town', town);
+  if (reduced)      params.set('reduced', 'true');
+  if (newHome)      params.set('newHome', 'true');
+  if (vacant)       params.set('vacant', 'true');
+  if (minBeds > 0)  params.set('beds', minBeds);
+  if (sortBy)       params.set('sortBy', sortBy);
   params.set('page', page);
   params.set('size', size);
   const res = await fetch(`/property/listings?${params}`, { headers: HEADERS });

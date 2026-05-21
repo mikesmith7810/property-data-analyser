@@ -5,6 +5,8 @@ public record PropertyListingQuery(
         String town,
         boolean reducedOnly,
         boolean newHomeOnly,
+        boolean vacantOnly,
+        int beds,
         String sortBy,
         int page,
         int size
